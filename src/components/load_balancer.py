@@ -200,11 +200,6 @@ class LoadBalancer:
     def _change_service_targets(self, num_new_services, client_socket_from_source):
         self.logger.info(f"Recebida configuração para alterar para {num_new_services} serviços.")
 
-        # TODO: Parar threads dos serviços antigos de forma mais graciosa (usar um event, por exemplo)
-        for service_thread in self.service_threads:
-            # Aqui precisaríamos de um método stop() no Service ou um event para sinalizar
-            # Como são daemon, elas eventualmente pararão, mas não é imediato nem limpo.
-            pass
         self.services.clear()
         self.service_threads.clear() 
         self.logger.info("Serviços antigos removidos (lista limpa).")

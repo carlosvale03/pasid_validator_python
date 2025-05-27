@@ -193,9 +193,9 @@ class Source:
         for result in self.experiment_results:
             self.logger.info(f"Ciclo {result['cycle_id']+1} (Serviços: {result['qtd_services']}): MRT={result['mrt_ms']:.2f}ms, SD={result['std_dev_ms']:.2f}ms")
 
-        self.print_final_times_like_java_feed()
+        self._log_mean_transition_times()
 
-    def print_final_times_like_java_feed(self):
+    def _log_mean_transition_times(self):
         self.logger.info("--- Tempos Intermediários Médios (Tx) ---")
         expected_delta_indices = {
             "T1": 4, "T2": 6, "T3": 10, "T4": 14, "T5": 18
@@ -243,9 +243,6 @@ class Source:
         self.run_experiment_cycles()
 
 if __name__ == '__main__':
-    # Para teste individual do Source, lembre-se que os outros componentes precisam estar rodando.
-    # A configuração do logger raiz é feita em logger_setup, importado no início.
-    # Podemos obter um logger para o bloco __main__ se quisermos logar a inicialização aqui.
     main_logger_source_test = get_logger("SourceTestMain")
     main_logger_source_test.info("Iniciando teste individual do Source...")
     
