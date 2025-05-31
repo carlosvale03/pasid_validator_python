@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  source:
+    build: .
+    container_name: pasid_source_container
+    command: python main.py --component source --env docker
+    ports:
+      - "${SOURCE_LISTEN_PORT:-4000}:${SOURCE_LISTEN_PORT:-4000}"
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - pasid_net
+    depends_on: # Source inicia após os LBs terem iniciado (não garante prontidão total)
+      lb1:
+        condition: service_started
+      lb2:
+        condition: service_started
+
+  lb1:
+    build: .
+    container_name: pasid_lb1_container
+    command: python main.py --component lb1 --env docker
+    ports:
+      - "${LB1_LISTEN_PORT:-5000}:${LB1_LISTEN_PORT:-5000}"
+    volumes:
+      - ./logs:/app/logs
+      - ${CAMINHO_MODELO_BERT_HOST_ENV}:${CAMINHO_MODELO_BERT_CONTAINER_ENV:-/app/bert_model_data}:ro
+      - huggingface_cache:/root/.cache/huggingface
+    networks:
+      - pasid_net
+    depends_on: # LB1 pode precisar que LB2 esteja iniciado se houver comunicação direta inicial
+      lb2:
+        condition: service_started
+
+  lb2:
+    build: .
+    container_name: pasid_lb2_container
+    command: python main.py --component lb2 --env docker
+    ports:
+      - "${LB2_LISTEN_PORT:-6000}:${LB2_LISTEN_PORT:-6000}"
+    volumes:
+      - ./logs:/app/logs
+      - ${CAMINHO_MODELO_BERT_HOST_ENV}:${CAMINHO_MODELO_BERT_CONTAINER_ENV:-/app/bert_model_data}:ro
+      - huggingface_cache:/root/.cache/huggingface
+    networks:
+      - pasid_net
+
+networks:
+  pasid_net:
+    driver: bridge
+
+volumes:
+  huggingface_cache:
