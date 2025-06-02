@@ -1,6 +1,3 @@
-Aqui está o `README.md` completo, atualizado para refletir o estado atual do seu projeto, incluindo as otimizações, a capacidade de execução com Docker, e com espaços para você inserir seus gráficos e as breves análises que fizemos.
-
-```markdown
 # PASID-VALIDATOR em Python (Pós-Entrega 02)
 
 Este projeto é uma reimplementação em Python do sistema PASID-VALIDATOR. O objetivo principal é simular um sistema distribuído cliente-servidor(es), integrado com um serviço de Inteligência Artificial (IA) para classificação de texto (posicionamento), e coletar dados de desempenho como o Tempo Médio de Resposta (MRT) e tempos intermediários de processamento.
