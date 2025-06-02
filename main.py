@@ -22,8 +22,8 @@ SOURCE_CONFIG_DOCKER = {
     'listen_port': SOURCE_LISTEN_PORT,
     'target_lb1_host': 'lb1',
     'target_lb1_port': LB1_LISTEN_PORT,
-    'arrival_delay_ms': 200,
-    'max_messages_per_cycle': 5,
+    'arrival_delay_ms': 1000, # (ex: 2000, 1000, 500, 250, 100, 50)
+    'max_messages_per_cycle': 30,
     'qtd_services_variation': [1, 2],
     'config_target_lb_host': 'lb2',
     'config_target_lb_port': LB2_LISTEN_PORT,
@@ -44,7 +44,11 @@ SERVICE_CONFIG_FOR_LB1_DOCKER = {
     'host': '0.0.0.0',
     'model_path': None, # LB1 não lida com o .bin
     'bert_model_name': None, # LB1 não carrega modelo base
+    # 'model_path': CAMINHO_MODELO_BERT_CONTAINER, # Para o .bin
+    # 'bert_model_name': 'neuralmind/bert-large-portuguese-cased', # Para config/tokenizer base
     'has_ia': False,
+    'time_mean': 100,
+    'time_std_dev': 10,
     'target_host': 'lb2',
     'target_port': LB2_LISTEN_PORT,
     'target_is_source': False
@@ -53,7 +57,7 @@ LB1_CONFIG_DOCKER = {
     'host': '0.0.0.0',
     'port': LB1_LISTEN_PORT,
     'max_queue_size': 20,
-    'initial_num_services': 1,
+    'initial_num_services': 2,
     'service_config': SERVICE_CONFIG_FOR_LB1_DOCKER,
     'lb_name': "LoadBalancer1Service"
 }
@@ -72,7 +76,7 @@ SERVICE_CONFIG_FOR_LB2_DOCKER = {
 LB2_CONFIG_DOCKER = {
     'host': '0.0.0.0',
     'port': LB2_LISTEN_PORT,
-    'max_queue_size': 20,
+    'max_queue_size': 30,
     'service_config': SERVICE_CONFIG_FOR_LB2_DOCKER,
     'lb_name': "LoadBalancer2Service"
     # initial_num_services será definido com base na config do Source
@@ -92,6 +96,8 @@ SERVICE_CONFIG_FOR_LB1_LOCAL = {
     'model_path': None,
     'bert_model_name': None,
     'has_ia': False,
+    'time_mean': 5,
+    'time_std_dev': 1,
     'target_host': 'localhost',
     'target_port': LB2_LISTEN_PORT,
     'target_is_source': False

@@ -1,4 +1,5 @@
 entrega.txt
+data_process.ipynb
 
 # Byte-compiled / optimized / DLL files
 pycache/
@@ -27,6 +28,9 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+logs_rename/
+plots/
+
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
