@@ -147,10 +147,8 @@ Ajuste `initial_system_wait_time_sec` e `lb_reconfig_wait_time_sec` no `source.p
 ## Análise de Resultados e Gráficos
 
 ### 1. Tempo Médio de Resposta (MRT) vs. Taxa de Geração
-* **Gráfico:** [Insira aqui o seu gráfico `mrt_vs_taxa_geracao_geral.png`]
-    ```
-    ![MRT vs Taxa de Geração](graficos/mrt_vs_taxa_geracao_geral.png) 
-    ```
+* **Gráfico:**
+    ![MRT vs Taxa de Geração](graficos/mrt_vs_taxa_geracao_geral.png)
 * **Análise Detalhada:**
   Este gráfico ilustra como o Tempo Médio de Resposta (MRT) do sistema varia em função da Taxa de Geração de Requisições (medida em Requisições Por Segundo - RPS). Linhas distintas representam o comportamento do sistema com diferentes quantidades de serviços de IA ativos no LoadBalancer 2 (LB2) – no caso dos dados apresentados, para 1 (linha roxa), 2 (linha azul) e 4 (linha amarela) serviços.
 
@@ -171,10 +169,8 @@ Ajuste `initial_system_wait_time_sec` e `lb_reconfig_wait_time_sec` no `source.p
   O gráfico demonstra que o Tempo Médio de Resposta (MRT) é sensível tanto à taxa de geração de requisições quanto ao número de serviços de IA disponíveis no LB2. Aumentar a taxa de geração invariavelmente eleva o MRT. A adição de um segundo serviço de IA no LB2 oferece uma melhoria substancial de desempenho em relação a um único serviço, permitindo que o sistema suporte taxas de geração mais altas antes que o MRT se degrade significativamente. No entanto, escalar para quatro serviços de IA apresenta um comportamento misto: embora possa oferecer o melhor MRT em certas taxas de geração médias (como 4 RPS), em taxas mais altas (10 RPS), seu desempenho pode ser inferior ao de dois serviços, sugerindo um ponto de rendimento decrescente onde outros fatores limitantes ou overheads de paralelização se tornam proeminentes. Em todas as configurações, taxas de geração muito altas levam o sistema a operar com MRTs elevados, indicando saturação.
 
 ### 2. Tempos Intermediários Médios ($T_x$) vs. Taxa de Geração
-* **Gráfico:** [Insira aqui o seu gráfico `tempos_tx_vs_taxa_geracao_unico.png`]
-    ```
+* **Gráfico:**
     ![Tempos Tx vs Taxa de Geração](graficos/tempos_tx_vs_taxa_geracao_unico.png)
-    ```
 * **Análise Detalhada:**
   * **$T_1$ (Rede Source → LB1):** Este tempo representa a latência de rede para o primeiro salto da mensagem. Como observado no gráfico, $T_1$ (linha azul) permanece consistentemente muito baixo, próximo de zero, em todas as taxas de geração. Isso indica que a comunicação inicial do `Source` para o `LoadBalancer1` é rápida e eficiente, não constituindo um gargalo, o que é esperado em um ambiente Docker local.
   * **$T_2$ (Fila LB1):** Este é o tempo que uma mensagem aguarda na fila interna do `LoadBalancer1`. A linha laranja ($T_2$) também se inicia próxima de zero para taxas de geração baixas. No entanto, observa-se um aumento perceptível em $T_2$ a partir de 4 RPS, indicando que, com cargas mais elevadas, o LB1 começa a enfileirar mensagens. Este enfileiramento no LB1 é um sintoma secundário, provavelmente causado pela lentidão do LB2 em consumir as mensagens, gerando um efeito de represamento.
@@ -185,10 +181,8 @@ Ajuste `initial_system_wait_time_sec` e `lb_reconfig_wait_time_sec` no `source.p
 * **Conclusão dos Tempos Intermediários:** A análise dos tempos $T_x$ revela que, enquanto a comunicação de rede inicial ($T_1$) e o processamento no primeiro estágio (LB1 e Svc1, resultando em $T_2$ e $T_3$ pequenos) são eficientes, o sistema enfrenta um gargalo severo no `LoadBalancer2`. O tempo de processamento da IA ($T_5$) por mensagem é inerentemente alto. Contudo, é o **tempo de espera na fila do LB2 ($T_4$) que domina o Tempo Médio de Resposta e se degrada drasticamente com o aumento da taxa de geração**. Isso ocorre porque a taxa de serviço do(s) componente(s) de IA no LB2 não consegue acompanhar a taxa de chegada de requisições em regimes de carga mais alta, levando a um enfileiramento massivo. O aumento do tempo na fila do LB1 ($T_2$) em taxas mais altas é um reflexo secundário desse gargalo principal no LB2.
 
 ### 3. Desvio Padrão do MRT vs. Taxa de Geração
-* **Gráfico:** [Insira aqui o seu gráfico `stddev_mrt_vs_taxa_geracao.png`]
-    ```
+* **Gráfico:**
     ![Desvio Padrão do MRT vs Taxa de Geração](graficos/stddev_mrt_vs_taxa_geracao.png)
-    ```
 * **Análise Detalhada:**
     Este gráfico apresenta o Desvio Padrão Médio do MRT (calculado a partir das mensagens dentro de cada ciclo experimental) em função da Taxa de Geração de Requisições. O desvio padrão é uma medida da variabilidade ou dispersão dos tempos de resposta individuais em torno da média (MRT), indicando a estabilidade e previsibilidade do sistema. Linhas distintas mostram o comportamento para 1 (roxo), 2 (azul) e 4 (amarelo) serviços de IA no LB2.
 
